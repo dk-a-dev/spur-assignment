@@ -30,7 +30,6 @@ services:
     environment:
       PORT: "8080"
       NODE_ENV: development
-      # Important: inside Docker, connect via service name `postgres`
       DATABASE_URL: postgresql://spur:spur@postgres:5432/spur_chat?schema=public
       REDIS_URL: redis://redis:6379
       GEMINI_MODEL: gemini-2.5-flash
