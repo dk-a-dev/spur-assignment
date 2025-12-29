@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.chatRouter = void 0;
+const express_1 = require("express");
+const rateLimit_1 = require("../middleware/rateLimit");
+const chatController_1 = require("../controllers/chatController");
+exports.chatRouter = (0, express_1.Router)();
+exports.chatRouter.post("/message", (0, rateLimit_1.rateLimitMiddleware)(), chatController_1.postMessage);
+exports.chatRouter.get("/job/:jobId", chatController_1.getJob);
+exports.chatRouter.get("/subscribe", chatController_1.subscribe);
+exports.chatRouter.get("/history", chatController_1.getHistory);
