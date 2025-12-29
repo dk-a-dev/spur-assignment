@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MessageSender {
+  user
+  ai
+  system
+}
+
+model Visitor {
+  id         String         @id @default(cuid())
+  externalId String         @unique
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  conversations Conversation[]
+
+  @@index([createdAt])
+}
+
+model Conversation {
+  id            String    @id @default(cuid())
+  visitorId     String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastMessageAt DateTime  @default(now())
+
+  visitor  Visitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@index([visitorId, lastMessageAt])
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  sender         MessageSender
+  text           String
+  createdAt      DateTime      @default(now())
+
+  // Optional: dedupe retries from the frontend.
+  clientMessageId String?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@unique([conversationId, clientMessageId])
+}
+
+model FaqEntry {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
