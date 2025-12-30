@@ -2,6 +2,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# DATABASE_URL is required at build time because the build runs migrations.
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
 # Install deps (dev deps needed for build/tsc)
 COPY package.json package-lock.json ./
 RUN npm ci
