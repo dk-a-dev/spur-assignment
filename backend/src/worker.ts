@@ -44,5 +44,4 @@ new Worker(
   }
 );
 
-// eslint-disable-next-line no-console
 console.log("Worker running");

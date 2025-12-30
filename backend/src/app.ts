@@ -14,7 +14,7 @@ export function createApp() {
   app.use(visitorMiddleware);
 
   app.get("/health", (_req, res) => {
-    res.json({ ok: true });
+    res.json({ "status": "ok" });
   });
 
   app.use("/chat", chatRouter);
