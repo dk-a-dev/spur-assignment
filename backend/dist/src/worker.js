@@ -28,5 +28,4 @@ new bullmq_1.Worker("chat-reply", async (job) => {
     connection,
     concurrency: 10
 });
-// eslint-disable-next-line no-console
 console.log("Worker running");

@@ -14,6 +14,7 @@ async function generateReply(params) {
     }
     const model = config_1.env.GEMINI_MODEL || "gemini-3-pro-preview";
     const systemInstructionText = `${params.systemPrompt}\n\nStore FAQ / Policies:\n${params.faqContext}`.trim();
+    // Use systemInstruction instead of putting system prompt into a user message.
     const contents = toGeminiContents([
         ...params.history,
         { role: "user", text: params.userMessage }
@@ -26,6 +27,7 @@ async function generateReply(params) {
             method: "POST",
             headers: {
                 "content-type": "application/json",
+                // Put API key in header (not URL) so it never appears in error strings.
                 "x-goog-api-key": config_1.env.GEMINI_API_KEY
             },
             body: JSON.stringify({
@@ -65,6 +67,8 @@ async function generateReply(params) {
         return replyText.trim();
     }
     catch (err) {
+        // Log server-side for debugging (no API key in message).
+        // eslint-disable-next-line no-console
         console.error("Gemini generateReply failed:", err);
         throw err;
     }

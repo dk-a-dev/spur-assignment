@@ -7,9 +7,11 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "worker:dev": "ts-node-dev --respawn --transpile-only src/worker.ts",
     "dev:all": "concurrently -k -n api,worker -c blue,magenta \"npm run dev\" \"npm run worker:dev\"",
-    "build": "tsc -p tsconfig.json",
+    "build": "npx prisma generate && tsc -p tsconfig.json",
     "start": "node dist/index.js",
+    "start:worker": "node dist/worker.js",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "prisma:seed": "tsx prisma/seed.ts"
   },

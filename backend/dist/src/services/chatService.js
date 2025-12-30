@@ -77,6 +77,7 @@ function sha256(text) {
 }
 async function postUserMessage(params) {
     const { text, truncated } = clampMessageText(params.message);
+    const truncationNote = "\n\n(Note: Your message was truncated to 2000 characters.)";
     if (text.length === 0) {
         return {
             ok: false,
@@ -121,13 +122,12 @@ async function postUserMessage(params) {
         try {
             const cached = await redis_1.redis.get(cacheKey);
             if (cached && cached.trim().length > 0) {
+                const replyForUser = truncated ? `${cached}${truncationNote}` : cached;
                 await prisma_1.prisma.message.create({
                     data: {
                         conversationId: conversation.id,
                         sender: "ai",
-                        text: truncated
-                            ? `${cached}\n\n(Note: Your message was truncated to 2000 characters.)`
-                            : cached
+                        text: replyForUser
                     }
                 });
                 await prisma_1.prisma.conversation.update({
@@ -137,7 +137,7 @@ async function postUserMessage(params) {
                 return {
                     ok: true,
                     sessionId: conversation.id,
-                    reply: cached
+                    reply: replyForUser
                 };
             }
         }
@@ -160,6 +160,7 @@ async function postUserMessage(params) {
         reply =
             "Sorry — I’m having trouble reaching the support agent brain right now. Please try again in a moment.";
     }
+    const replyForUser = truncated ? `${reply}${truncationNote}` : reply;
     if (cacheKey) {
         try {
             await redis_1.redis.set(cacheKey, reply, "EX", config_1.env.CACHE_TTL_SECONDS);
@@ -172,9 +173,7 @@ async function postUserMessage(params) {
         data: {
             conversationId: conversation.id,
             sender: "ai",
-            text: truncated
-                ? `${reply}\n\n(Note: Your message was truncated to 2000 characters.)`
-                : reply
+            text: replyForUser
         }
     });
     await prisma_1.prisma.conversation.update({
@@ -184,7 +183,7 @@ async function postUserMessage(params) {
     return {
         ok: true,
         sessionId: conversation.id,
-        reply
+        reply: replyForUser
     };
 }
 async function persistUserMessage(params) {

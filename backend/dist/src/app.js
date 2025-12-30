@@ -16,7 +16,7 @@ function createApp() {
     app.use((0, cookie_parser_1.default)());
     app.use(visitor_1.visitorMiddleware);
     app.get("/health", (_req, res) => {
-        res.json({ ok: true });
+        res.json({ "status": "ok" });
     });
     app.use("/chat", chatRoutes_1.chatRouter);
     app.use((err, _req, res, _next) => {
