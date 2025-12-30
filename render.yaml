@@ -1,0 +1,63 @@
+services:
+  # Backend API Server
+  - type: web
+    name: spur-chat-api
+    runtime: node
+    region: virginia
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      - key: DATABASE_URL
+        value: postgresql://spur_assignment_db_user:8wzD23Ls3SbGGDugNO5S4SvBpTgF13C3@dpg-d5a266re5dus73es1hkg-a.virginia-postgres.render.com/spur_assignment_db
+      - key: REDIS_URL
+        value: rediss://red-d5a26n63jp1c73ccm6o0:bKRltqqRiavqHrLdVJaEF7GwHl69pOuI@virginia-keyvalue.render.com:6379
+      - key: GEMINI_API_KEY
+        sync: false  # Set this manually in Render dashboard
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash-exp
+      - key: RATE_LIMIT_VISITOR_PER_MINUTE
+        value: 10
+      - key: RATE_LIMIT_IP_PER_MINUTE
+        value: 60
+      - key: CACHE_TTL_SECONDS
+        value: 900
+      - key: MAX_ACTIVE_CONVERSATIONS
+        value: 3
+      - key: ACTIVE_CONVERSATION_TTL_MINUTES
+        value: 1440
+
+  # Background Worker for BullMQ
+  - type: worker
+    name: spur-chat-worker
+    runtime: node
+    region: virginia
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm run start:worker
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://spur_assignment_db_user:8wzD23Ls3SbGGDugNO5S4SvBpTgF13C3@dpg-d5a266re5dus73es1hkg-a.virginia-postgres.render.com/spur_assignment_db
+      - key: REDIS_URL
+        value: rediss://red-d5a26n63jp1c73ccm6o0:bKRltqqRiavqHrLdVJaEF7GwHl69pOuI@virginia-keyvalue.render.com:6379
+      - key: GEMINI_API_KEY
+        sync: false  # Set this manually in Render dashboard
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash-exp
+      - key: CACHE_TTL_SECONDS
+        value: 900
+
+  # Frontend Static Site
+  - type: web
+    name: spur-chat-frontend
+    runtime: static
+    region: virginia
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://spur-chat-api.onrender.com  # Update with your actual API URL

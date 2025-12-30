@@ -1,0 +1,93 @@
+{
+  "info": {
+    "name": "Spur Chat API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Send Message (sync)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "content-type", "value": "application/json" },
+          { "key": "x-visitor-id", "value": "{{visitorId}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"What is your return policy?\",\n  \"sessionId\": {{sessionId}},\n  \"clientMessageId\": \"pm-1\"\n}"
+        },
+        "url": "{{baseUrl}}/chat/message"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.sessionId) { pm.environment.set('sessionId', JSON.stringify(json.sessionId)); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Send Message (async queue)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "content-type", "value": "application/json" },
+          { "key": "x-visitor-id", "value": "{{visitorId}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Do you ship to USA?\",\n  \"sessionId\": {{sessionId}},\n  \"clientMessageId\": \"pm-async-1\",\n  \"async\": true\n}"
+        },
+        "url": "{{baseUrl}}/chat/message"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.sessionId) { pm.environment.set('sessionId', JSON.stringify(json.sessionId)); }",
+              "if (json.jobId) { pm.environment.set('jobId', json.jobId); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Job Status",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/chat/job/{{jobId}}"
+      }
+    },
+    {
+      "name": "Conversation History",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "x-visitor-id", "value": "{{visitorId}}" }],
+        "url": "{{baseUrl}}/chat/history?sessionId={{sessionId}}"
+      }
+    },
+    {
+      "name": "Subscribe (SSE)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "x-visitor-id", "value": "{{visitorId}}" }],
+        "url": "{{baseUrl}}/chat/subscribe?sessionId={{sessionId}}"
+      }
+    }
+  ]
+}
