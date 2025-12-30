@@ -2,7 +2,7 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# DATABASE_URL is required at build time because the build runs migrations.
+# Optional: supply DATABASE_URL if you want to run migrations during build (not used here).
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
@@ -15,8 +15,8 @@ COPY tsconfig.json ./
 COPY prisma ./prisma
 COPY src ./src
 
-# Build (runs prisma generate + tsc via npm script)
-RUN npm run build
+# Build without running migrations; migrations should be handled separately (e.g., web service)
+RUN npm run build:no-migrate
 
 FROM node:20-alpine AS runner
 WORKDIR /app

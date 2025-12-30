@@ -8,6 +8,7 @@
     "worker:dev": "ts-node-dev --respawn --transpile-only src/worker.ts",
     "dev:all": "concurrently -k -n api,worker -c blue,magenta \"npm run dev\" \"npm run worker:dev\"",
     "build": "npx prisma generate && npx prisma migrate deploy && tsc -p tsconfig.json",
+    "build:no-migrate": "npx prisma generate && tsc -p tsconfig.json",
     "start": "node dist/src/index.js",
     "start:worker": "node dist/src/worker.js",
     "prisma:migrate": "prisma migrate dev",
