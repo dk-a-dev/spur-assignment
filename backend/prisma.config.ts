@@ -4,5 +4,6 @@ import "dotenv/config";
 export default defineConfig({
   datasource: {
     url: process.env.DATABASE_URL,
+    shadowDatabaseUrl: process.env.DATABASE_SHADOW_URL,
   },
 });
