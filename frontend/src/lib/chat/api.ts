@@ -16,7 +16,14 @@ const VISITOR_HEADER = 'x-visitor-id';
 export async function apiFetch(visitorId: string, path: string, init: RequestInit = {}) {
   const headers = new Headers(init.headers);
   headers.set(VISITOR_HEADER, visitorId);
-  return fetch(`${API_BASE}${path}`, { ...init, headers });
+  const url = `${API_BASE}${path}`;
+  console.log("[API] Fetching", { url, method: init.method || 'GET', visitorId });
+  const res = await fetch(url, { ...init, headers });
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("[API] Response error", { status: res.status, statusText: res.statusText, body: text });
+  }
+  return res;
 }
 
 export async function fetchHistory(params: {
