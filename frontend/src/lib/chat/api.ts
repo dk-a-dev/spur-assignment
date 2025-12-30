@@ -9,7 +9,8 @@ export type SendMessageResponse = {
   reply: string;
 };
 
-const API_BASE = '/api';
+// In prod (Vercel) the backend lives on a different origin. Use env when provided.
+const API_BASE = import.meta.env.VITE_API_BASE ?? '/api';
 const VISITOR_HEADER = 'x-visitor-id';
 
 export async function apiFetch(visitorId: string, path: string, init: RequestInit = {}) {
